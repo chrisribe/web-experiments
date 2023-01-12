@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module" src="https://unpkg.com/@fluentui/web-components"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 1em;
+        }
+
+        .custom {
+            --card-width: 300px;
+            --card-height: 300px;
+            padding: 22px;
+        }
+        fieldset {
+            margin-top: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <fieldset>
+        <legend>fluent-card</legend>
+        <fluent-card class="custom">
+                Custom size using CSS
+            </fluent-card>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>fluent-checkbox</legend>
+        <fluent-checkbox>Did you check this?</fluent-checkbox><br />
+        <fluent-checkbox checked disabled>Is this disabled?</fluent-checkbox><br />
+        <fluent-checkbox checked>Checked by default?</fluent-checkbox>
+    </fieldset>
+    
+    <fieldset>
+        <legend>fluent-combobox</legend>
+
+        <h3>Default</h3>
+        <fluent-combobox placeholder="Select a graphics card">
+          <fluent-option value="1">GTX 1060</fluent-option>
+          <fluent-option value="2">GTX 1070</fluent-option>
+          <fluent-option value="3">GTX 1080</fluent-option>
+          <fluent-option value="4" disabled>GTX 1090</fluent-option>
+        </fluent-combobox>
+        
+        <h3>With autocomplete</h3>
+        <fluent-combobox autocomplete="both" placeholder="Select a graphics card">
+          <fluent-option value="1">GTX 1060</fluent-option>
+          <fluent-option value="2">GTX 1070</fluent-option>
+          <fluent-option value="3">GTX 1080</fluent-option>
+          <fluent-option value="4" disabled>GTX 1090</fluent-option>
+        </fluent-combobox>
+        
+        <h3>Disabled</h3>
+        <fluent-combobox disabled placeholder="Select an option">
+          <fluent-option value="1">Option 1</fluent-option>
+          <fluent-option value="2">Option 2</fluent-option>
+          <fluent-option value="3">Option 3</fluent-option>
+        </fluent-combobox>        
+    </fieldset>
+</body>
+</html>

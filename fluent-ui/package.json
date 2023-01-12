@@ -1,0 +1,15 @@
+{
+  "name": "fluent-ui",
+  "version": "1.0.0",
+  "description": "A test zone for fluentui",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
