@@ -1,13 +1,12 @@
 const GetSpeech = () => {
-    setMsgToElement("status", "clicked microphone");
     const SpeechRecognition =  window.SpeechRecognition || window.webkitSpeechRecognition;
 
     let recognition = new SpeechRecognition();
     recognition.onstart = () => {
-        setMsgToElement("status", "start listening, speak in microphone now");
+        setMsgToElement("status", "SpeechRecognition now listening, go ahead and speak in the microphone now!");
     }
     recognition.onspeechend = () => {
-        setMsgToElement("status", "speechend: stop listening now");
+        setMsgToElement("status", "SpeechRecognition listen stopped");
         recognition.stop();
     }
     recognition.onresult = (result) => {
