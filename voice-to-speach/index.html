@@ -5,30 +5,30 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Page Title</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <script type="javascript">
+    <script>
 
         const GetSpeech = () => {
             console.log("clicked microphone");
             const SpeechRecognition =  window.SpeechRecognition || window.webkitSpeechRecognition;
         
             let recognition = new SpeechRecognition();
-                recognition.onstart = () => {
-                    console.log("starting listening, speak in microphone");
-                }
-                recognition.onspeechend = () => {
-                    console.log("stopped listening");
-                    recognition.stop();
-                }
-                recognition.onresult = (result) => {
-                    console.log(result.results[0][0].transcript);
-                 }
-        
-                 recognition.start();
-        }
+            recognition.onstart = () => {
+                console.log("starting listening, speak in microphone");
+            }
+            recognition.onspeechend = () => {
+                console.log("stopped listening");
+                recognition.stop();
+            }
+            recognition.onresult = (result) => {
+                console.log(result.results[0][0].transcript);
+            }
+    
+            recognition.start();
+    }
         
     </script>
 </head>
 <body>
-    <button onClick="GetSpeech()"><i class="fa-solid fa-microphone"></i> </button>
+    <button onClick="GetSpeech()"><i class="fa-solid fa-microphone">Listen and transcribe</i> </button>
 </body>
 </html>
