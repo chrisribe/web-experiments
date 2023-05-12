@@ -1,22 +1,22 @@
 const GetSpeech = () => {
-    setStatus("clicked microphone");
+    setMsgToElement("status", "clicked microphone");
     const SpeechRecognition =  window.SpeechRecognition || window.webkitSpeechRecognition;
 
     let recognition = new SpeechRecognition();
     recognition.onstart = () => {
-        setStatus("start listening, speak in microphone now");
+        setMsgToElement("status", "start listening, speak in microphone now");
     }
     recognition.onspeechend = () => {
-        setStatus("speechend: stop listening now");
+        setMsgToElement("status", "speechend: stop listening now");
         recognition.stop();
     }
     recognition.onresult = (result) => {
-        setStatus(result.results[0][0].transcript);
+        setMsgToElement("output", result.results[0][0].transcript);
     }
 
     recognition.start();
 }
 
-function setStatus(msg) {
-    document.getElementById('status').innerHTML = msg;
+function setMsgToElement(elId, msg) {
+    document.getElementById(elId).innerHTML = msg;
 }
