@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS test</title>
+    <style>
+        textarea{
+            width: 100%;
+            height: 250px;
+        }
+    </style>
+</head>
+<body>
+    <h2>XSS Tests</h2>
+    <b>Raw input</b>
+    <textarea id="main">
+        <div style="overflow-x: auto;">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <th class="fdcfInfoTable">Information Needed</th>
+                        <th class="fdcfInfoTable">Date Due</th>
+                    </tr>
+                    <tr>
+                        <td class="fdcfInfoTable"
+                            title="Proof of gross wages for last 4 weeks. Proof of gross earned income is the amount before anything is taken out. You must verify the last four weeks with paystubs or an income statement from all jobs including self-employment, tips, commission, seasonal and farm work">
+                            Proof of gross wages for last 4 weeks. Proof of gross earned income
+                            is the amount before anything is taken out. You must verify the last
+                            four weeks with paystubs or an income statement from all jobs
+                            including self-employment, tips, commission, seasonal and farm work
+                        </td>
+                        <td class="fdcfInfoTable"
+                            title="10/06/2022">
+                            10/06/2022
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fdcfInfoTable" title="Proof of identity">
+                            Proof of identity
+                        </td>
+                        <td class="fdcfInfoTable" title="10/06/2022">
+                            10/06/2022
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fdcfInfoTable" title="Proof that you have applied for a Social Security Number">
+                            Proof that you have applied for a Social Security Number
+                        </td>
+                        <td class="fdcfInfoTable" title="09/08/2022">
+                            09/08/2022
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fdcfInfoTable" title="Proof of Florida residency">
+                            Proof of Florida residency
+                        </td>
+                        <td class="fdcfInfoTable" title="09/08/2022">
+                            09/08/2022
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                        class="fdcfInfoTable" title="In order to qualify for Medicaid, you must sign and return the financial medical release form CF2616 that was mailed to you">
+                            In order to qualify for Medicaid, you must sign and return the
+                            financial medical release form CF2616 that was mailed to you
+                        </td>
+                        <td class="fdcfInfoTable" title="10/06/2022">
+                            10/06/2022
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+    
+    
+            <style>
+            th.fdcfInfoTable, td.fdcfInfoTable {
+                text-align: left;
+                padding: 7px;
+            }
+            td.fdcfInfoTable {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                max-width: 196px !important;
+            }
+        </style>
+
+    </textarea>
+    <button id="run" type="button">Run XSS</button>
+
+    <div id="output"></div>
+
+
+    <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+    <script>
+        (function(window, document){
+            function addToDoc(text, targetSelector, emptyFirst) {
+                let div = document.createElement("div");
+                div.innerHTML = text;
+                let target = document.querySelector(targetSelector)
+                if (target) {
+                    if (emptyFirst) {
+                        target.innerHTML = "";
+                    }
+                    target.appendChild(div);
+                }
+            }
+
+            let btn = document.querySelector('#run');
+            btn.addEventListener('click', function(e) {
+                let tableHtml = document.querySelector("#main").value;
+                let tableHtmlXSS1 = filterMethodOne(tableHtml);
+                let tableHtmlXSS2 = filterMethodTwo(tableHtml);
+                
+                addToDoc("<h3>No XSS</h3>", "#output", true);
+                addToDoc(tableHtml, "#output");
+            
+                addToDoc("<h3>With XSS</h3>", "#output");
+                addToDoc(tableHtmlXSS2, "#output");
+
+                addToDoc(`<b>Raw output</b><textarea>${tableHtmlXSS2}</textarea>`, "#output");
+            });
+
+            function filterMethodTwo(html){
+                var options = {
+                    css: false,
+                    whiteList: {
+                        style: [],
+                        div: ["style"],
+                        span: [],
+                        table: ["cellspacing", "cellpadding"],
+                        tbody: [],
+                        th: ["class", "title"],
+                        td: ["class", "title"],
+                        lt:[],
+                        tr:[],
+                    },
+                };           
+                let htmlXSS = filterXSS(html, options);
+                return htmlXSS;
+            }
+
+            function filterMethodOne(html){
+                //apply function filterXSS in the same way
+                let htmlXSS = filterXSS(html, {
+                    onIgnoreTagAttr: function (tag, name, value, isWhiteAttr) {
+                        if (name.substr(0, 5) === "data-" || name === "cobshoff" || name === "id" || name === "coboff") {					
+                            return name + '="' + value + '"';
+                        }
+                    }
+                });
+                return htmlXSS;
+            }
+        })(window, document);
+  
+    </script>
+</body>
+</html>
+
