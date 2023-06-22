@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XSS test</title>
     <style>
-        textarea{
+        textarea {
             width: 100%;
             height: 250px;
         }
     </style>
 </head>
+
 <body>
     <h2>XSS Tests</h2>
     <b>Raw input</b>
     <textarea id="main">
-        <div style="overflow-x: auto;">
+        <div style="overflow-x: auto;" id="bob">
             <table cellspacing="0" cellpadding="0">
                 <tbody>
                     <tr>
@@ -93,9 +95,9 @@
     <div id="output"></div>
 
 
-    <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+    <script src="xss.js"></script>
     <script>
-        (function(window, document){
+        (function (window, document) {
             function addToDoc(text, targetSelector, emptyFirst) {
                 let div = document.createElement("div");
                 div.innerHTML = text;
@@ -109,53 +111,55 @@
             }
 
             let btn = document.querySelector('#run');
-            btn.addEventListener('click', function(e) {
+            btn.addEventListener('click', function (e) {
                 let tableHtml = document.querySelector("#main").value;
-                let tableHtmlXSS1 = filterMethodOne(tableHtml);
-                let tableHtmlXSS2 = filterMethodTwo(tableHtml);
-                
+                let tableHtmlXSS = filterXSSWithOptions(tableHtml);
+
                 addToDoc("<h3>No XSS</h3>", "#output", true);
                 addToDoc(tableHtml, "#output");
-            
-                addToDoc("<h3>With XSS</h3>", "#output");
-                addToDoc(tableHtmlXSS2, "#output");
 
-                addToDoc(`<b>Raw output</b><textarea>${tableHtmlXSS2}</textarea>`, "#output");
+                addToDoc("<h3>With XSS</h3>", "#output");
+                addToDoc(tableHtmlXSS, "#output");
+
+                addToDoc(`<b>Raw output</b><textarea>${tableHtmlXSS}</textarea>`, "#output");
             });
 
-            function filterMethodTwo(html){
-                var options = {
-                    css: false,
-                    whiteList: {
-                        style: [],
-                        div: ["style"],
-                        span: [],
-                        table: ["cellspacing", "cellpadding"],
-                        tbody: [],
-                        th: ["class", "title"],
-                        td: ["class", "title"],
-                        lt:[],
-                        tr:[],
-                    },
-                };           
-                let htmlXSS = filterXSS(html, options);
-                return htmlXSS;
-            }
+            function filterXSSWithOptions(html) {
 
-            function filterMethodOne(html){
-                //apply function filterXSS in the same way
-                let htmlXSS = filterXSS(html, {
+                const filterCSSOptions = {
+                    whiteList: Object.assign(filterCSS.getDefaultWhiteList(), {
+                        "overflow-x": true
+                    })
+                };
+                const filterXSSOptions = {
+                    whiteList: Object.assign(filterXSS.getDefaultWhiteList(), {
+                        style: [],
+                        table: ["cellspacing", "cellpadding", "width", "border", "align"]
+                    }),
+                    //<-- css:false => alone not safe BUT IS safe if we filterCSS 
+                    // the style tag contents via onTagAttr
+                    //https://github.com/leizongmin/js-xss/issues/72#issuecomment-359693586
+                    css: false,
+                    onTagAttr: function(tag, name, value, isWhiteAttr) { 
+                        if (name === 'style') {
+                            return `${name}="${filterCSS(value, filterCSSOptions )}"`;
+                        }
+                    },
+                    //<-- alone not safe
+                    //Global tag attributes allowed
                     onIgnoreTagAttr: function (tag, name, value, isWhiteAttr) {
-                        if (name.substr(0, 5) === "data-" || name === "cobshoff" || name === "id" || name === "coboff") {					
-                            return name + '="' + value + '"';
+                        if (['class', 'title', 'id'].indexOf(name) !== -1) {
+                            return `${name}="${value}"`;
                         }
                     }
-                });
-                return htmlXSS;
+                };
+
+                return filterXSS(html, filterXSSOptions);
             }
+
         })(window, document);
-  
+
     </script>
 </body>
-</html>
 
+</html>
