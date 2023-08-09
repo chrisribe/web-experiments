@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS test</title>
+    <style>
+        textarea {
+            width: 100%;
+            height: 250px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>XSS Tests</h2>
+    <b>Raw input</b>
+    <textarea id="main">
+        <div style="overflow-x: auto;" id="bob">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <th class="fdcfInfoTable">Information Needed</th>
+                        <th class="fdcfInfoTable">Date Due</th>
+                    </tr>
+                    <tr>
+                        <td class="fdcfInfoTable"
+                            title="Proof of gross wages for last 4 weeks. Proof of gross earned income is the amount before anything is taken out. You must verify the last four weeks with paystubs or an income statement from all jobs including self-employment, tips, commission, seasonal and farm work">
+                            Proof of gross wages for last 4 weeks. Proof of gross earned income
+                            is the amount before anything is taken out. You must verify the last
+                            four weeks with paystubs or an income statement from all jobs
+                            including self-employment, tips, commission, seasonal and farm work
+                        </td>
+                        <td class="fdcfInfoTable"
+                            title="10/06/2022">
+                            10/06/2022
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fdcfInfoTable" title="Proof of identity">
+                            Proof of identity
+                        </td>
+                        <td class="fdcfInfoTable" title="10/06/2022">
+                            10/06/2022
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fdcfInfoTable" title="Proof that you have applied for a Social Security Number">
+                            Proof that you have applied for a Social Security Number
+                        </td>
+                        <td class="fdcfInfoTable" title="09/08/2022">
+                            09/08/2022
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fdcfInfoTable" title="Proof of Florida residency">
+                            Proof of Florida residency
+                        </td>
+                        <td class="fdcfInfoTable" title="09/08/2022">
+                            09/08/2022
+                        </td>
+                    </tr>
+                    <tr>
+                        <td
+                        class="fdcfInfoTable" title="In order to qualify for Medicaid, you must sign and return the financial medical release form CF2616 that was mailed to you">
+                            In order to qualify for Medicaid, you must sign and return the
+                            financial medical release form CF2616 that was mailed to you
+                        </td>
+                        <td class="fdcfInfoTable" title="10/06/2022">
+                            10/06/2022
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+    
+    
+            <style>
+            th.fdcfInfoTable, td.fdcfInfoTable {
+                text-align: left;
+                padding: 7px;
+            }
+            td.fdcfInfoTable {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                max-width: 196px !important;
+            }
+        </style>
+
+    </textarea>
+    <button id="run" type="button">Run XSS</button>
+
+    <div id="output"></div>
+
+
+    <script src="xss.js"></script>
+    <script>
+        (function (window, document) {
+            function addToDoc(text, targetSelector, emptyFirst) {
+                let div = document.createElement("div");
+                div.innerHTML = text;
+                let target = document.querySelector(targetSelector)
+                if (target) {
+                    if (emptyFirst) {
+                        target.innerHTML = "";
+                    }
+                    target.appendChild(div);
+                }
+            }
+
+            let btn = document.querySelector('#run');
+            btn.addEventListener('click', function (e) {
+                let tableHtml = document.querySelector("#main").value;
+                let tableHtmlXSS = filterXSSWithOptions(tableHtml);
+
+                addToDoc("<h3>No XSS</h3>", "#output", true);
+                addToDoc(tableHtml, "#output");
+
+                addToDoc("<h3>With XSS</h3>", "#output");
+                addToDoc(tableHtmlXSS, "#output");
+
+                addToDoc(`<b>Raw output</b><textarea>${tableHtmlXSS}</textarea>`, "#output");
+            });
+
+            function filterXSSWithOptions(html) {
+
+                const filterCSSOptions = {
+                    whiteList: Object.assign(filterCSS.getDefaultWhiteList(), {
+                        "overflow-x": true
+                    })
+                };
+                const filterXSSOptions = {
+                    whiteList: Object.assign(filterXSS.getDefaultWhiteList(), {
+                        style: [],
+                        table: ["cellspacing", "cellpadding", "width", "border", "align"]
+                    }),
+                    //<-- css:false => alone not safe BUT IS safe if we filterCSS 
+                    // the style tag contents via onTagAttr
+                    //https://github.com/leizongmin/js-xss/issues/72#issuecomment-359693586
+                    css: false,
+                    onTagAttr: function(tag, name, value, isWhiteAttr) { 
+                        if (name === 'style') {
+                            return `${name}="${filterCSS(value, filterCSSOptions )}"`;
+                        }
+                    },
+                    //<-- alone not safe
+                    //Global tag attributes allowed
+                    onIgnoreTagAttr: function (tag, name, value, isWhiteAttr) {
+                        if (['class', 'title', 'id'].indexOf(name) !== -1) {
+                            return `${name}="${value}"`;
+                        }
+                    }
+                };
+
+                return filterXSS(html, filterXSSOptions);
+            }
+
+        })(window, document);
+
+    </script>
+</body>
+
+</html>
