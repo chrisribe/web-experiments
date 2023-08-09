@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>XState Client</title>
+    <script src="https://unpkg.com/xstate/dist/xstate.js"></script> <!-- Include XState from a CDN -->
+<style>
+	.traffic-light {
+		width: 100px;
+		height: 300px;
+		background-color: #333;
+		border-radius: 20px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+		padding: 20px 0;
+	}
+	.light {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background-color: #111;
+		opacity: 0.3;
+	}
+	.light.on {
+		opacity: 1;
+	}
+	.light.off {
+		opacity: 0.3;
+	}
+	
+	 #red {
+		background-color: red;
+	}
+	 #amber {
+		background-color: orange;
+	}
+	 #green {
+		background-color: green;
+	}
+</style>	
+</head>
+<body>
+    <h1>XState Client</h1>
+	<div>
+		<a href="/">Simple LightSwitch</a>
+	</div>
+	<div>
+		<a href="/?filename=trafficLightSwitch.json">Traffic LightSwitch</a>
+	</div>
+
+    <div class="traffic-light">
+        <div id="red" class="light"></div>
+        <div id="amber" class="light"></div>
+        <div id="green" class="light"></div>
+    </div>
+	<div id="state"></div>
+	
+    <script>
+		// Get the filename from the URL query parameters
+		const params = new URLSearchParams(window.location.search);
+		let filename = params.get('filename');
+		if(filename == null) {
+			filename = "";
+		}
+
+		// Use the filename in the fetch URL
+		fetch('http://localhost:3000/state-definition/' + filename)	
+            .then(response => response.json())
+            .then(machineConfig => {
+                const { Machine, interpret } = XState;
+                const machine = Machine(machineConfig);
+                const service = interpret(machine);
+
+                service.onTransition((state) => {
+					let stateStr = `The light is now ${state.value}`;
+                    console.log(stateStr);
+					document.body.querySelector('#state').innerText = stateStr;
+					
+					let tls = document.body.querySelectorAll('.traffic-light .light');
+					switch(state.value){
+						case 'on':
+						case 'off':
+							tls.forEach((el) => {
+								el.classList.remove("on", "off");
+								el.classList.add(state.value);
+							});
+						break;
+						default:
+							tls.forEach((el) => {
+								el.classList.remove("on", "off");
+								if(el.id == state.value){
+									el.classList.add("on");
+								}
+							});
+						break;
+					}
+                });
+
+                service.start();
+
+                // Test switching states
+                setInterval(() => {
+                    service.send('SWITCH');
+                }, 1000);
+            });
+    </script>
+	
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+    "id": "trafficLightSWITCH",
+    "initial": "off",
+    "states": {
+      "off": {
+        "on": { "SWITCH": "on" }
+      },
+      "on": {
+        "on": { "SWITCH": "red" }
+      },
+      "red": {
+        "on": { "SWITCH": "amber" }
+      },
+      "amber": {
+        "on": { "SWITCH": "green" }
+      },
+      "green": {
+        "on": { "SWITCH": "off" }
+      }	  
+    }
+}  
