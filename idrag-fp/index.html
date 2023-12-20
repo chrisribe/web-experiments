@@ -1,0 +1,113 @@
+<html>
+<head></head>
+<body>
+<div class="drag-container">
+  <style type="text/css">
+	body{
+	    margin: 0;
+		border: 3px solid pink;
+	}
+	
+    .drag-container {
+      position: relative;
+      height: 100%;
+	  width: 100%;
+	  display:inline-block;
+    }
+	.drag-container.fixed{
+		position: fixed;
+		right: 0;
+		bottom: 0;
+		top: initial!important;
+		left: initial!important;
+	}
+    .drag-iframe {
+      position: absolute;
+      width: 100% !important;
+      height: 100% !important;
+    }
+	iframe{
+		overflow: hidden;
+	}
+  </style>
+
+<!-- ENTIRE iframe and ibus concept separate ?
+	- create: div container and iframe.
+	- create: iBus message listener and postMessage
+	- create: actionsFactory? or other
+-->
+
+  <iframe class="drag-iframe" src="drag-iframe.html" scrolling="no" frameborder="0" style="top: 0px; left: 0px;"></iframe>
+  <script type="text/javascript">
+      // Handles moving of the client target iframe.
+	  var clientDrag = function(window, document){
+		  var pageMouseX, pageMouseY
+		  var $iframe = document.querySelector('.drag-container')
+
+		  var frameTop = 0
+		  var frameLeft = 0
+		  $iframe.style.top = frameTop + 'px'
+		  $iframe.style.left = frameLeft + 'px'
+	      
+		  //iBus part {message and data should be managed to proper "actionClass?"}
+		  window.addEventListener('message', evt => {
+			const data = evt.data
+			switch (data.msg) {
+			  case 'SALADICT_DRAG_START':
+				handleDragStart(data.mouseX, data.mouseY)
+				break;
+			  case 'SALADICT_DRAG_MOUSEMOVE':
+				handleFrameMousemove(data.offsetX, data.offsetY)
+				break;
+			  case 'SALADICT_DRAG_END':
+				handleDragEnd()
+				break;
+  			  case 'SALADICT_FIXED':
+			    if(data.state){
+					$iframe.classList.add('fixed');
+				}else{
+					$iframe.classList.remove('fixed');
+				}
+				break;
+			}
+		  })
+		  function handleDragStart (mouseX, mouseY) {
+			pageMouseX = frameLeft + mouseX
+			pageMouseY = frameTop + mouseY
+			document.addEventListener('mouseup', handleDragEnd)
+			//document.addEventListener('mousemove', handlePageMousemove)
+					
+			document.addEventListener('touchend', handleDragEnd);
+			//document.addEventListener('touchmove', handlePageMousemove);			
+		  }
+		  function handleDragEnd () {
+			document.removeEventListener('mouseup', handleDragEnd)
+			//document.removeEventListener('mousemove', handlePageMousemove)
+			
+			document.removeEventListener('touchend', handleDragEnd);
+			//document.removeEventListener('touchmove', handlePageMousemove);			
+		  }
+		  function handleFrameMousemove (offsetX, offsetY) {
+			frameTop += offsetY
+			frameLeft += offsetX
+			$iframe.style.top = frameTop + 'px'
+			$iframe.style.left = frameLeft + 'px'
+			pageMouseX += offsetX
+			pageMouseY += offsetY
+		  }
+		  function handlePageMousemove (evt) {
+			frameTop += (evt.clientX || evt.touches[0].clientX) - pageMouseX
+			frameLeft += (evt.clientY || evt.touches[0].clientY) - pageMouseY
+			$iframe.style.top = frameTop + 'px'
+			$iframe.style.left = frameLeft + 'px'
+			pageMouseX = evt.clientX || evt.touches[0].clientX
+			pageMouseY = evt.clientY || evt.touches[0].clientY
+		  }	  
+	  
+	  }(window, document);
+  
+  </script>
+</div>
+
+</body>
+</html>
