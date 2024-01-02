@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="css/lightgallery.css" />
+
+		<!-- lightgallery plugins -->
+		<link type="text/css" rel="stylesheet" href="css/lg-zoom.css" />
+		<link type="text/css" rel="stylesheet" href="css/lg-thumbnail.css" />
+		<link type="text/css" rel="stylesheet" href="css/lg-share.css" />
+
+
+		<!-- OR 
+		<link type="text/css" rel="stylesheet" href="css/lightgallery-bundle.css" />
+		-->
+	</head>
+	<body>
+		 <h1>Lightgallery Demo</h1>
+		<script src="js/lightgallery.umd.js"></script>
+
+		<!-- lightgallery plugins -->
+		<script src="js/plugins/thumbnail/lg-thumbnail.umd.js"></script>
+		<script src="js/plugins/zoom/lg-zoom.umd.js"></script>
+		<script src="js/plugins/share/lg-share.umd.js"></script>
+		
+		<div id="lightgallery">
+			<a href="photo-gallery/photo1.jpg" data-lg-size="1600-1067">
+				<img alt="image 4" src="photo-gallery/photo1-t.jpg" />
+			</a>
+			<a href="photo-gallery/photo2.jpg" data-lg-size="1600-1067">
+				<img alt="image 2" src="photo-gallery/photo2-t.jpg" />
+			</a>
+		</div>		
+
+		<script type="text/javascript">
+			lightGallery(
+				document.getElementById('lightgallery'), 
+				  {
+					autoplayFirstVideo: false,
+					pager: false,
+					galleryId: "nature",
+					mousewheel: true,
+					plugins: [lgZoom, lgThumbnail, lgShare],
+					mobileSettings: {
+					  controls: false,
+					  showCloseIcon: false,
+					  download: false,
+					  rotate: false
+					}
+				  }
+			);
+		</script>		
+	</body>
+</html>
