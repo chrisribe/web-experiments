@@ -11,9 +11,47 @@
 		<!-- OR 
 		<link type="text/css" rel="stylesheet" href="css/lightgallery-bundle.css" />
 		-->
+	  <style>
+    /* Style the top navigation bar */
+    .top-navigation {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    /* Style the top navigation links */
+    .top-navigation a {
+      float: left;
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    /* Change color on hover */
+    .top-navigation a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    /* Style for the jazzy intro message */
+    .intro-message {
+      font-size: 24px;
+      text-align: center;
+    }
+	  </style>
+		
 	</head>
 	<body>
-		 <h1>Lightgallery Demo</h1>
+		<div class="top-navigation">
+			<a href="#">Home</a>
+			<a href="#">Gallery</a>
+			<a href="#">About</a>
+			<a href="#">Contact</a>
+		</div>	
+		<h1 class="intro-message">Welcome to the Lightgallery Demo</h1>
+		
 		<script src="js/lightgallery.umd.js"></script>
 
 		<!-- lightgallery plugins -->
