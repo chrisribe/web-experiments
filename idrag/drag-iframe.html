@@ -1,46 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
+  <title>Draggable Frame</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style type="text/css">
     html {
-      background: #27ae60;
+      background: #f8f9fa;
       cursor: move;
     }
-	body{
-		margin:0;
-		width:100%;
-		height:100%;
-	}
-	.noselect {
-	  -webkit-touch-callout: none; /* iOS Safari */
-		-webkit-user-select: none; /* Safari */
-		 -khtml-user-select: none; /* Konqueror HTML */
-		   -moz-user-select: none; /* Old versions of Firefox */
-			-ms-user-select: none; /* Internet Explorer/Edge */
-				user-select: none; /* Non-prefixed version, currently
-									  supported by Chrome, Edge, Opera and Firefox */
-	}	
-	.box{
-		height: 100%;
-		width: 100%;
-		border: 1px solid red;
-	}
-	.title{
-		font-weight:bold;
-		font-size: 16px;
-		text-align: center;
-		width: 100%;
-	}
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .noselect {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .drag-content {
+      padding: 10px;
+      text-align: center;
+    }
+    .title {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .info {
+      font-size: 12px;
+      color: #666;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
-<div class="box">
-	<div class="title">Me</div>
-	<input value="Some input"/>
-	<button onClick="toggleFixed()">Toggle fixed pos</button>
-	
-	<div class="more-stuff"></div>
+<div class="drag-content">
+  <div class="title">Draggable Frame</div>
+  <div class="info">Click and drag anywhere</div>
+  <button class="btn btn-sm btn-primary" onClick="toggleFixed()">Toggle Fixed Position</button>
+  <div class="more-stuff"></div>
 </div>
 
 <script type="text/javascript">
