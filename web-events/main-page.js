@@ -1,23 +1,21 @@
 (function(){
   document.addEventListener('DOMContentLoaded', () => {
-    // document.addEventListener('purchase', (event) => {
-    //   const product = event.detail.product;
-    //   if (updateProductCount(product)) {
-    //     console.log(`Purchase confirmed for: ${product}`);
-    //   } else {
 
-    //   }
-    // });
-
-    window.handlePurchaseEvent = function(event) {
-        console.log('Product purchased:', event.detail.product);
-        updateProductCount(event.detail.product);
-    };
-    // Ensure the event listener is added after the DOM is fully loaded
-    const eventListener = document.createElement('event-listener');
-    eventListener.setAttribute('event-name', 'purchase');
-    eventListener.setAttribute('callback', 'handlePurchaseEvent');
-    document.body.appendChild(eventListener);
+    DFlow.addEventListener('purchase', (event) => {
+      const { product, requesterId } = event.detail;
+      handlePurchase(product, requesterId);
+    });
+    
+    function handlePurchase(productName, requesterId) {
+      console.log('Product purchased:', productName);
+      
+      // Simulate an asynchronous operation (e.g., XHR request)
+      setTimeout(() => {
+        let success = updateProductCount(productName);
+        const response = { success: success, product: productName, requesterId };
+        DFlow.dispatchEvent('purchase-reply', response);
+      }, 1000);
+    }    
 
   });
 
