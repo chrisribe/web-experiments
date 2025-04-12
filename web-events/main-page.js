@@ -14,8 +14,15 @@
         let success = updateProductCount(productName);
         const response = { success: success, product: productName, requesterId };
         DFlow.dispatchEvent('purchase-reply', response);
-      }, 1000);
+      }, 300);
     }    
+
+    setInterval(() => {
+      DFlow.dispatchEvent('live-events', { 
+        message: 'Live events are happening!', 
+        cnt: Math.floor(Math.random() * 100)
+      });
+    }, 5000);
 
   });
 

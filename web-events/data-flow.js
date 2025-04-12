@@ -18,7 +18,7 @@
   // Expose the DFlow object globally
   window.DFlow = DFlow;
 
-  class DataRequester extends HTMLElement {
+  class ProductPurchase extends HTMLElement {
     constructor() {
       super();
       this.attachShadow({ mode: 'open' });
@@ -46,6 +46,10 @@
           this.handleResponse(event.detail);
         }
       });
+
+      DFlow.addEventListener('live-events', (event) => {
+          this.handleLiveResponse(event.detail);
+      });
     }
 
     handleResponse(data) {
@@ -53,10 +57,25 @@
       if (data.success) {
         // Update the total count of purchases
         // Get the total count element using set value and add 1 to it.
-        let totalElement = this.shadowRoot.getElementById('total-purchases');
+        let totalElement = this.shadowRoot.getElementById(data.product.toLowerCase() + '-count');
         let totalCount = parseInt(totalElement.textContent);
         totalElement.textContent = totalCount + 1;
+      } else {
+        // show red box around the product total count
+        let totalElement = this.shadowRoot.getElementById(data.product.toLowerCase() + '-count');
+        totalElement.style.backgroundColor = 'red';
+        // fade out the red border after 1 second
+        setTimeout(() => {
+          totalElement.style.backgroundColor = 'initial';
+        }, 3000);
       }
+    }
+    
+    handleLiveResponse(data) {
+      console.log(`Live Response received for ${this.id}:`, data);
+      let liveEvents = this.shadowRoot.querySelector('.live-events');
+      liveEvents.textContent = data.cnt;
+
     }
     render() {
       this.shadowRoot.innerHTML = `
@@ -89,23 +108,35 @@
             font-size: 1.2em;
             color: #333;
           }
+          .events{
+            align-items: center;
+            padding: 10px 0;
+          }
         </style>
         <div class="container">
           <div class="product-item">
             <span>Product 1</span>
-            <button class="purchase-button" data-product="Product 1">Purchase</button>
+            <div class="product-count">
+              <button class="purchase-button" part="purchase-button" data-product="Product-1">Purchase</button>
+              <span id="product-1-count">0</span>
+            </div>
           </div>
           <div class="product-item">
             <span>Product 2</span>
-            <button class="purchase-button" data-product="Product 2">Purchase</button>
+            <div class="product-count">
+              <button class="purchase-button" data-product="Product-2">Purchase</button>
+              <span id="product-2-count">0</span>  
+            </div>
           </div>
-          <div class="total-purchases">
-            Total Purchases: <span id="total-purchases">0</span>
+          <div class="events">
+            <span>Live events</span>
+            <div class="live-events">
           </div>
         </div>
       `;
     }
   }
 
-  customElements.define('data-requester', DataRequester);
+  customElements.define('product-purchase', ProductPurchase);
+
 })();
