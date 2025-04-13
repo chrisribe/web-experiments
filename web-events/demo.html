@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DFlow Component Demo</title>
+  <script src="data-flow-util.js"></script>
+  <script src="components.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f0f2f5;
+    }
+    .container {
+      width: fit-content;
+      margin: 0 auto;
+    }
+    balloon-game {
+        border: 1px solid;
+        display: inline-block;
+    }
+    .score-tracker {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Balloon Game</h1>
+        <p>Click the balloons to pop them!</p>
+        <balloon-game id="game1"></balloon-game>
+        <balloon-game id="game2"></balloon-game>
+        <balloon-game id="game3"></balloon-game>
+        <score-tracker></score-tracker>
+    </div>
+
+</body>
+</html>
