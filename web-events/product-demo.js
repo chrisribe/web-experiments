@@ -1,18 +1,20 @@
 (function() {
-  // These are local constants, not global.
+  // --- All component-related code is now in this single file ---
+
+  // 1. DEFINE and REGISTER the events for this feature
   const componentEventNames = [
     'product:purchase',
     'product:purchase-reply',
     'product:live-events'
   ];
+  EventBus.register(componentEventNames);
 
+
+  // 2. DEFINE the ProductPurchase Web Component
   class ProductPurchase extends HTMLElement {
     constructor() {
       super();
       this.attachShadow({ mode: 'open' });
-
-      // The registration logic is now removed from the constructor.
-      
       this.handlePurchaseReply = this.handlePurchaseReply.bind(this);
       this.handleLiveResponse = this.handleLiveResponse.bind(this);
     }
@@ -33,7 +35,6 @@
       this.shadowRoot.querySelectorAll('.purchase-button').forEach(button => {
         button.addEventListener('click', (e) => {
           const productName = e.target.getAttribute('data-product');
-          // Dispatch using the locally defined, registered name
           EventBus.dispatch('product:purchase', { product: productName, requesterId: this.id });
         });
       });
@@ -53,16 +54,12 @@
     handleResponse(data) {
       console.log(`Response received for ${this.id}:`, data);
       if (data.success) {
-        // Update the total count of purchases
-        // Get the total count element using set value and add 1 to it.
         let totalElement = this.shadowRoot.getElementById(data.product.toLowerCase() + '-count');
         let totalCount = parseInt(totalElement.textContent);
         totalElement.textContent = totalCount + 1;
       } else {
-        // show red box around the product total count
         let totalElement = this.shadowRoot.getElementById(data.product.toLowerCase() + '-count');
         totalElement.style.backgroundColor = 'red';
-        // fade out the red border after 1 second
         setTimeout(() => {
           totalElement.style.backgroundColor = 'initial';
         }, 3000);
@@ -74,43 +71,15 @@
       console.log(`Live Response received for ${this.id}:`, data);
       let liveEvents = this.shadowRoot.querySelector('.live-events');
       liveEvents.textContent = data.cnt;
-
     }
+
     render() {
       this.shadowRoot.innerHTML = `
         <style>
-          .product-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-          }
-          .purchase-button {
-            padding: 8px 12px;
-            background: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-          }
-          .purchase-button:hover {
-            background: #45a049;
-          }
-          .total-purchases {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 1.2em;
-            color: #333;
-          }
-          .events{
-            align-items: center;
-            padding: 10px 0;
-          }
+          .product-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #ddd; }
+          .purchase-button { padding: 8px 12px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+          .purchase-button:hover { background: #45a049; }
+          .events{ align-items: center; padding: 10px 0; }
         </style>
         <div class="container">
           <div class="product-item">
@@ -129,13 +98,49 @@
           </div>
           <div class="events">
             <span>Live events</span>
-            <div class="live-events">
+            <div class="live-events"></div>
           </div>
         </div>
       `;
     }
   }
-
   customElements.define('product-purchase', ProductPurchase);
 
+
+  // 3. DEFINE the main application logic (the "backend")
+  document.addEventListener('DOMContentLoaded', () => {
+    EventBus.listen('product:purchase', (event) => {
+      const { product, requesterId } = event.detail;
+      handlePurchase(product, requesterId);
+    });
+    
+    function handlePurchase(productName, requesterId) {
+      console.log('Product purchased:', productName);
+      
+      setTimeout(() => {
+        let success = updateProductCount(productName);
+        const response = { success: success, product: productName, requesterId };
+        EventBus.dispatch('product:purchase-reply', response);
+      }, 300);
+    }    
+
+    setInterval(() => {
+      EventBus.dispatch('product:live-events', { 
+        message: 'Live events are happening!', 
+        cnt: Math.floor(Math.random() * 100)
+      });
+    }, 5000);
+  });
+
+  function updateProductCount(productName) {
+    const productCountElement = document.getElementById(`${productName.toLowerCase().replace(' ', '')}-count`);
+    if (productCountElement) {
+      let count = parseInt(productCountElement.textContent);
+      if (count > 0) {
+        productCountElement.textContent = count - 1;
+        return true;
+      }
+    }
+    return false;
+  }
 })();

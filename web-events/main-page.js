@@ -1,7 +1,13 @@
 (function(){
   document.addEventListener('DOMContentLoaded', () => {
+    const componentEventNames = [
+      'product:purchase',
+      'product:purchase-reply',
+      'product:live-events'
+    ];
+    EventBus.register(componentEventNames);
 
-    DFlow.addEventListener('purchase', (event) => {
+    EventBus.listen('product:purchase', (event) => {
       const { product, requesterId } = event.detail;
       handlePurchase(product, requesterId);
     });
@@ -13,12 +19,12 @@
       setTimeout(() => {
         let success = updateProductCount(productName);
         const response = { success: success, product: productName, requesterId };
-        DFlow.dispatchEvent('purchase-reply', response);
+        EventBus.dispatch('product:purchase-reply', response);
       }, 300);
     }    
 
     setInterval(() => {
-      DFlow.dispatchEvent('live-events', { 
+      EventBus.dispatch('product:live-events', { 
         message: 'Live events are happening!', 
         cnt: Math.floor(Math.random() * 100)
       });

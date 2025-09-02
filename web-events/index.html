@@ -12,6 +12,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-top: 20px;
+            color: #333; /* Ensure text is dark on the light background */
         }
         .product-item {
             display: flex;
@@ -27,34 +28,46 @@
             background: #ff5722;
         }
     </style>
-    <script src="data-flow.js"></script>
-    <script src="main-page.js"></script>
+    <script src="validating-event-bus.js" defer></script>
+    <script src="product-demo.js" defer></script>
+    <script src="theme-demo.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <h1>Product Inventory</h1>
-        <div class="product-list">
-            <div class="product-item">
-                <span>Product 1</span>
-                <span id="product-1-count">10</span>
-            </div>
-            <div class="product-item">
-                <span>Product 2</span>
-                <span id="product-2-count">8</span>
-            </div>
-            <!-- Add more products as needed -->
+        <h1>Multi-Demo Event Bus</h1>
+
+        <div class="demo-section">
+            <h2>Theme Switcher Demo</h2>
+            <theme-switcher></theme-switcher>
         </div>
 
-        <div class="data-requester-container">
-            <h2>Purchase Products - client 1</h2>
-            <product-purchase></product-purchase>
-        </div>
-        <div class="data-requester-container">
-            <h2>Purchase Products - client 2</h2>
-            <product-purchase></product-purchase>
-        </div>
+        <themed-content>
+            <div class="demo-section">
+                <h2>Product Inventory</h2>
+                <div class="product-list">
+                    <div class="product-item">
+                        <span>Product 1</span>
+                        <span id="product-1-count">10</span>
+                    </div>
+                    <div class="product-item">
+                        <span>Product 2</span>
+                        <span id="product-2-count">8</span>
+                    </div>
+                </div>
+            </div>
 
-        <user-profile-card data-user-name="Bob"></user-profile-card>
+            <div class="demo-section">
+                <h2>Purchase Products - Client 1</h2>
+                <product-purchase></product-purchase>
+            </div>
+        </themed-content>
+
+        <themed-content>
+            <div class="demo-section">
+                <h2>Purchase Products - Client 2</h2>
+                <product-purchase></product-purchase>
+            </div>
+        </themed-content>
     </div>
 </body>
 </html>
